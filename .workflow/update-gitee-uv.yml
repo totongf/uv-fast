@@ -1,0 +1,37 @@
+version: '1.0'
+name: update-uv-cache
+displayName: 更新 uv 缓存
+
+triggers:
+  schedule:
+    - cron: '15 4 * * ?'
+
+variables:
+  GITEE_OWNER_NAME: totongf
+  GITEE_REPO_NAME: uv-custom2
+  GITEE_BRANCH_NAME: master
+  UV_FAST_MIRROR_BASE_URL: https://uv.agentsmirror.com
+
+stages:
+  - stage:
+    name: update
+    displayName: 更新缓存
+    strategy: naturally
+    trigger: auto
+    steps:
+      - step: build@python
+        name: update_uv_cache
+        displayName: 更新 uv installer 和元数据
+        pythonVersion: 3.9
+        commands:
+          - |
+            set -euo pipefail
+            if [ -z "${UV_GITEE_TOKEN:-}" ]; then
+              echo "请先在 Gitee Go 流水线变量中添加 UV_GITEE_TOKEN，并设置为私密变量"
+              exit 1
+            fi
+            export GITEE_TOKEN="$UV_GITEE_TOKEN"
+            export GITEE_OWNER="$GITEE_OWNER_NAME"
+            export GITEE_REPO="$GITEE_REPO_NAME"
+            export GITEE_BRANCH="$GITEE_BRANCH_NAME"
+            bash scripts/update-gitee-uv.sh
