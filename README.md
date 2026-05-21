@@ -2,7 +2,7 @@
 
 `uv-fast` 是一个面向国内网络环境的 uv 快速安装入口。
 
-目标是后续只用一句命令完成安装：
+最终安装命令：
 
 ```sh
 curl -LsSf https://gitee.com/totongf/uv-custom2/raw/master/install.sh | sh
@@ -16,6 +16,34 @@ curl -LsSf https://gitee.com/totongf/uv-custom2/raw/master/install.sh | sh
 - 写入 `python-downloads-json-url`，让 `uv python install` 走国内元数据
 - 写入 `UV_DEFAULT_INDEX`，让默认 PyPI 源走国内入口
 
+## 当前状态
+
+当前自动更新链路已经配置：
+
+```text
+GitHub Actions 定时任务
+  -> 更新 Gitee uv-custom2 缓存
+  -> 国内用户通过 Gitee raw 安装
+```
+
+定时任务默认每天北京时间 `04:15` 执行，也可以在 GitHub Actions 页面手动运行。
+
+## 文档
+
+详细文档见 [docs/README.md](docs/README.md)。
+
+常用入口：
+
+- [快速开始](docs/quick-start.md)
+- [系统架构](docs/architecture.md)
+- [安装脚本说明](docs/installer.md)
+- [自动更新方案](docs/auto-update.md)
+- [GitHub Actions 配置](docs/github-actions.md)
+- [Gitee Go 配置](docs/gitee-go.md)
+- [安全与令牌](docs/security.md)
+- [故障排查](docs/troubleshooting.md)
+- [运维手册](docs/operations.md)
+
 ## 目录
 
 ```text
@@ -28,6 +56,8 @@ uv-fast/
     .github/workflows/update-gitee-uv.yml
   gitee/
     .workflow/update-gitee-uv.yml
+  docs/
+    README.md
 ```
 
 ## 发布到 Gitee
@@ -56,34 +86,11 @@ metadata/uv-latest.json
 
 ## GitHub Actions 在线自动刷新
 
-把 `uv-fast/github/.github/workflows/update-gitee-uv.yml` 放到 GitHub 仓库的 `.github/workflows/update-gitee-uv.yml`。
-
-在 GitHub 仓库中添加 Secret：
-
-```text
-GITEE_TOKEN=你的 Gitee 私人令牌
-```
-
-它会每天北京时间 04:15 自动执行，也支持手动 `Run workflow`。
-
-可选 Variables：
-
-- `GITEE_OWNER`：默认 `totongf`
-- `GITEE_REPO`：默认 `uv-custom2`
-- `GITEE_BRANCH`：默认 `master`
-- `UV_FAST_MIRROR_BASE_URL`：默认 `https://uv.agentsmirror.com`
+配置说明见 [docs/github-actions.md](docs/github-actions.md)。
 
 ## Gitee Go 在线自动刷新
 
-把 `uv-fast/gitee/.workflow/update-gitee-uv.yml` 放到 Gitee 仓库的 `.workflow/update-gitee-uv.yml`。
-
-在 Gitee Go 流水线变量中添加：
-
-```text
-UV_GITEE_TOKEN=你的 Gitee 私人令牌
-```
-
-设置为私密变量。流水线会每天 04:15 自动执行，也可以手动运行。
+配置说明见 [docs/gitee-go.md](docs/gitee-go.md)。
 
 ## 本机自动刷新
 
@@ -97,7 +104,4 @@ GITEE_TOKEN=你的私人令牌 bash scripts/setup-local-auto-update.sh
 
 ## 安全
 
-- 不要把 Gitee 令牌写进仓库文件。
-- GitHub 使用 Secrets，Gitee Go 使用私密变量。
-- 不要在脚本中打印令牌。
-- 建议单独创建一个只用于 `uv-custom2` 的 Gitee 令牌。
+安全说明见 [docs/security.md](docs/security.md)。
